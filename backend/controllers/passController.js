@@ -1,3 +1,4 @@
+const generatePassPDF = require("../utils/generatePassPDF");
 const crypto = require("crypto");
 const QRCode = require("qrcode");
 const Pass = require("../models/Pass");
@@ -114,8 +115,30 @@ const getPassById = async (req, res) => {
   }
 };
 
+const downloadPassPDF = async (req, res) => {
+  try {
+    const pass = await Pass.findById(req.params.id)
+      .populate("visitor")
+      .populate("appointment");
+
+    if (!pass) {
+      return res.status(404).json({
+        message: "Pass not found",
+      });
+    }
+
+    generatePassPDF(pass, res);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to generate pass PDF",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createPass,
   getPasses,
   getPassById,
+  downloadPassPDF,
 };
