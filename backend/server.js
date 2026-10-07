@@ -1,3 +1,4 @@
+const notificationRoutes = require("./routes/notificationRoutes");
 const checkLogRoutes = require("./routes/checkLogRoutes");
 const passRoutes = require("./routes/passRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
@@ -23,6 +24,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/api/notifications", notificationRoutes);
 app.use("/api/checklogs", checkLogRoutes);
 app.use("/api/passes", passRoutes);
 app.use("/api/appointments", appointmentRoutes);
