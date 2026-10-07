@@ -43,6 +43,7 @@ const Dashboard = () => {
       )}
       <Link to="/visitors">Manage Visitors</Link>
       <Link to="/appointments">Manage Appointments</Link>
+      <Link to="/passes">Manage Visitor Passes</Link>
 
       <button onClick={logout}>Logout</button>
     </div>
