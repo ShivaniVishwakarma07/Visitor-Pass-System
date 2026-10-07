@@ -25,7 +25,11 @@ const Visitors = () => {
         },
       });
 
-      setVisitors(response.data);
+      const visitorData = Array.isArray(response.data)
+        ? response.data
+        : response.data.visitors || [];
+
+      setVisitors(visitorData);
     } catch (error) {
       console.error(error);
     } finally {
