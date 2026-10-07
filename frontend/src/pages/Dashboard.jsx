@@ -1,4 +1,5 @@
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -40,6 +41,7 @@ const Dashboard = () => {
           <p>View your appointments and visitor passes.</p>
         </div>
       )}
+      <Link to="/visitors">Manage Visitors</Link>
 
       <button onClick={logout}>Logout</button>
     </div>
