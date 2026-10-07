@@ -1,3 +1,5 @@
+const appointmentRoutes = require("./routes/appointmentRoutes");
+const visitorRoutes = require("./routes/visitorRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const express = require("express");
@@ -19,6 +21,8 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/api/appointments", appointmentRoutes);
+app.use("/api/visitors", visitorRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
