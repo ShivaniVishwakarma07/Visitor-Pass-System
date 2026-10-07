@@ -42,6 +42,7 @@ const Dashboard = () => {
         </div>
       )}
       <Link to="/visitors">Manage Visitors</Link>
+      <Link to="/appointments">Manage Appointments</Link>
 
       <button onClick={logout}>Logout</button>
     </div>
