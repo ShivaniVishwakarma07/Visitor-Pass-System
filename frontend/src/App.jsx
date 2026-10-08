@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Visitors from "./pages/Visitors";
+import AdminDashboard from "./pages/AdminDashboard";
 import CheckLogs from "./pages/CheckLogs";
 import CheckInOut from "./pages/CheckInOut";
 import Passes from "./pages/Passes";
@@ -62,6 +63,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CheckLogs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
