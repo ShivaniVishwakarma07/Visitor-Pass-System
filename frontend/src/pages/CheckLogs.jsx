@@ -26,38 +26,51 @@ const CheckLogs = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Visitor Check Logs</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Visitor Check Logs</h1>
+        <p>Track visitor check-in and check-out activity</p>
+      </div>
 
-      {loading ? (
-        <p>Loading logs...</p>
-      ) : logs.length === 0 ? (
-        <p>No check-in or check-out records found.</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Visitor</th>
-              <th>Pass Number</th>
-              <th>Action</th>
-              <th>Scanned By</th>
-              <th>Date & Time</th>
-            </tr>
-          </thead>
+      <div className="card">
+        <h2>Activity Records</h2>
 
-          <tbody>
-            {logs.map((log) => (
-              <tr key={log._id}>
-                <td>{log.visitor?.name || "Unknown"}</td>
-                <td>{log.pass?.passNumber || "Unknown"}</td>
-                <td>{log.action}</td>
-                <td>{log.scannedBy?.name || "Unknown"}</td>
-                <td>{new Date(log.timestamp).toLocaleString()}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        {loading ? (
+          <p>Loading logs...</p>
+        ) : logs.length === 0 ? (
+          <p>No check-in or check-out records found.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Visitor</th>
+                  <th>Pass Number</th>
+                  <th>Action</th>
+                  <th>Scanned By</th>
+                  <th>Date & Time</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {logs.map((log) => (
+                  <tr key={log._id}>
+                    <td>{log.visitor?.name || "Unknown"}</td>
+
+                    <td>{log.pass?.passNumber || "Unknown"}</td>
+
+                    <td>{log.action}</td>
+
+                    <td>{log.scannedBy?.name || "Unknown"}</td>
+
+                    <td>{new Date(log.timestamp).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
