@@ -23,36 +23,49 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h1>Visitor Pass Management System</h1>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Visitor Pass Management System</h1>
+        <p>Secure visitor access management</p>
 
-      <h2>Login</h2>
+        <h2>Login</h2>
 
-      {error && <p>{error}</p>}
+        {error && <div className="error-message">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Email</label>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <button type="submit">Login</button>
-      </form>
+          <div className="form-group">
+            <label>Password</label>
 
-      <p>
-        Don't have an account? <Link to="/register">Register</Link>
-      </p>
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            Login
+          </button>
+        </form>
+
+        <p>
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+      </div>
     </div>
   );
 };

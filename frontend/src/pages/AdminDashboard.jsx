@@ -67,48 +67,66 @@ const AdminDashboard = () => {
   }, []);
 
   if (loading) {
-    return <p>Loading dashboard...</p>;
+    return (
+      <div className="page-container">
+        <div className="page-header">
+          <h1>Admin Dashboard</h1>
+          <p>Loading dashboard statistics...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Admin Dashboard</h1>
+        <p>Overview of the visitor pass management system</p>
+      </div>
 
-      <div>
-        <div>
+      <div className="dashboard-grid">
+        <div className="stat-card">
           <h3>Total Visitors</h3>
           <p>{stats.visitors}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Total Appointments</h3>
           <p>{stats.appointments}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Approved Appointments</h3>
           <p>{stats.approvedAppointments}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Total Passes</h3>
           <p>{stats.passes}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Active Passes</h3>
           <p>{stats.activePasses}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Total Check-Ins</h3>
           <p>{stats.checkIns}</p>
         </div>
 
-        <div>
+        <div className="stat-card">
           <h3>Total Check-Outs</h3>
           <p>{stats.checkOuts}</p>
         </div>
+      </div>
+
+      <div className="card">
+        <h2>System Overview</h2>
+        <p>
+          The dashboard provides an overview of registered visitors,
+          appointments, issued passes and visitor movement records.
+        </p>
       </div>
     </div>
   );
