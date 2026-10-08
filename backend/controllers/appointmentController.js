@@ -1,5 +1,6 @@
 const Appointment = require("../models/Appointment");
 const Visitor = require("../models/Visitor");
+const sendEmail = require("../utils/sendEmail");
 
 const createAppointment = async (req, res) => {
   try {
@@ -103,7 +104,9 @@ const updateAppointmentStatus = async (req, res) => {
       });
     }
 
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await Appointment.findById(req.params.id).populate(
+      "visitor",
+    );
 
     if (!appointment) {
       return res.status(404).json({
@@ -111,9 +114,44 @@ const updateAppointmentStatus = async (req, res) => {
       });
     }
 
+    const previousStatus = appointment.status;
+
     appointment.status = status;
 
     await appointment.save();
+
+    if (status === "approved" && previousStatus !== "approved") {
+      try {
+        await sendEmail({
+          to: appointment.visitor.email,
+          subject: "Visitor Appointment Approved",
+          text: `Hello ${appointment.visitor.name},
+
+Your visitor appointment has been approved.
+
+Appointment Date: ${new Date(appointment.appointmentDate).toLocaleString()}
+Purpose: ${appointment.purpose}
+
+Please carry your valid visitor pass during your visit.
+
+Thank you,
+Visitor Pass Management System`,
+          html: `
+            <h2>Visitor Appointment Approved</h2>
+            <p>Hello ${appointment.visitor.name},</p>
+            <p>Your visitor appointment has been approved.</p>
+            <p><strong>Appointment Date:</strong> ${new Date(
+              appointment.appointmentDate,
+            ).toLocaleString()}</p>
+            <p><strong>Purpose:</strong> ${appointment.purpose}</p>
+            <p>Please carry your valid visitor pass during your visit.</p>
+            <p>Thank you,<br>Visitor Pass Management System</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Appointment email failed:", emailError.message);
+      }
+    }
 
     const updatedAppointment = await Appointment.findById(appointment._id)
       .populate("visitor")
