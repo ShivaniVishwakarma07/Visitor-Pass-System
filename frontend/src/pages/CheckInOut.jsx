@@ -92,34 +92,61 @@ const CheckInOut = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Security Check-In / Check-Out</h1>
-
-      <div id="qr-reader" style={{ width: "320px" }}></div>
-
-      <button onClick={startScanner}>Start QR Scanner</button>
-
-      <button onClick={stopScanner}>Stop Scanner</button>
-
-      <hr />
-
-      <input
-        type="text"
-        placeholder="Pass Number"
-        value={passNumber}
-        onChange={(e) => setPassNumber(e.target.value)}
-      />
-
-      <div>
-        <button onClick={handleCheckIn}>Check In</button>
-
-        <button onClick={handleCheckOut}>Check Out</button>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Security Check-In / Check-Out</h1>
+        <p>Scan QR codes or enter pass numbers manually</p>
       </div>
 
-      {error && <p>{error}</p>}
+      <div className="card">
+        <h2>QR Scanner</h2>
+
+        <div
+          id="qr-reader"
+          style={{
+            width: "320px",
+            marginBottom: "20px",
+          }}
+        ></div>
+
+        <button className="btn btn-primary" onClick={startScanner}>
+          Start Scanner
+        </button>
+
+        <button className="btn btn-danger" onClick={stopScanner}>
+          Stop Scanner
+        </button>
+      </div>
+
+      <div className="card">
+        <h2>Manual Pass Verification</h2>
+
+        <div className="form-group">
+          <label>Pass Number</label>
+
+          <input
+            type="text"
+            placeholder="Enter pass number"
+            value={passNumber}
+            onChange={(e) => setPassNumber(e.target.value)}
+          />
+        </div>
+
+        <div style={{ marginTop: "20px" }}>
+          <button className="btn btn-success" onClick={handleCheckIn}>
+            Check In
+          </button>
+
+          <button className="btn btn-danger" onClick={handleCheckOut}>
+            Check Out
+          </button>
+        </div>
+      </div>
+
+      {error && <div className="error-message">{error}</div>}
 
       {result && (
-        <div>
+        <div className="card">
           <h2>{result.message}</h2>
 
           {result.visitor && (
