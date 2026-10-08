@@ -1,5 +1,5 @@
-import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -17,36 +17,84 @@ const Dashboard = () => {
       {user?.role === "admin" && (
         <div>
           <h3>Admin Dashboard</h3>
-          <p>Manage users, visitors, appointments and reports.</p>
+
+          <p>Manage the complete visitor pass system.</p>
+
+          <Link to="/admin-dashboard">Admin Statistics</Link>
+
+          <br />
+
+          <Link to="/visitors">Manage Visitors</Link>
+
+          <br />
+
+          <Link to="/appointments">Manage Appointments</Link>
+
+          <br />
+
+          <Link to="/passes">Manage Visitor Passes</Link>
+
+          <br />
+
+          <Link to="/check-in-out">Security Check-In / Check-Out</Link>
+
+          <br />
+
+          <Link to="/check-logs">Visitor Check Logs</Link>
         </div>
       )}
 
       {user?.role === "security" && (
         <div>
           <h3>Security Dashboard</h3>
-          <p>Check visitors in and out and verify visitor passes.</p>
+
+          <p>Verify visitor passes and manage visitor movement.</p>
+
+          <Link to="/check-in-out">Security Check-In / Check-Out</Link>
+
+          <br />
+
+          <Link to="/check-logs">Visitor Check Logs</Link>
+
+          <br />
+
+          <Link to="/passes">View Visitor Passes</Link>
         </div>
       )}
 
       {user?.role === "employee" && (
         <div>
           <h3>Employee Dashboard</h3>
-          <p>Create appointments and manage visitors.</p>
+
+          <p>Manage visitors and appointments.</p>
+
+          <Link to="/visitors">Manage Visitors</Link>
+
+          <br />
+
+          <Link to="/appointments">Manage Appointments</Link>
+
+          <br />
+
+          <Link to="/passes">Manage Visitor Passes</Link>
         </div>
       )}
 
       {user?.role === "visitor" && (
         <div>
           <h3>Visitor Dashboard</h3>
+
           <p>View your appointments and visitor passes.</p>
+
+          <Link to="/appointments">My Appointments</Link>
+
+          <br />
+
+          <Link to="/passes">My Visitor Passes</Link>
         </div>
       )}
-      <Link to="/visitors">Manage Visitors</Link>
-      <Link to="/appointments">Manage Appointments</Link>
-      <Link to="/passes">Manage Visitor Passes</Link>
-      <Link to="/check-in-out">Security Check-In / Check-Out</Link>
-      <Link to="/check-logs">Visitor Check Logs</Link>
-      <Link to="/admin-dashboard">Admin Dashboard</Link>
+
+      <br />
 
       <button onClick={logout}>Logout</button>
     </div>
