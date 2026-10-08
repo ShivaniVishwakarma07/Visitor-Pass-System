@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Visitors from "./pages/Visitors";
+import CheckLogs from "./pages/CheckLogs";
 import CheckInOut from "./pages/CheckInOut";
 import Passes from "./pages/Passes";
 import Appointments from "./pages/Appointments";
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute>
               <CheckInOut />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/check-logs"
+          element={
+            <ProtectedRoute>
+              <CheckLogs />
             </ProtectedRoute>
           }
         />
