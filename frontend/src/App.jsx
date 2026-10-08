@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Visitors from "./pages/Visitors";
+import CheckInOut from "./pages/CheckInOut";
 import Passes from "./pages/Passes";
 import Appointments from "./pages/Appointments";
 import Login from "./pages/Login";
@@ -44,6 +45,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Passes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/check-in-out"
+          element={
+            <ProtectedRoute>
+              <CheckInOut />
             </ProtectedRoute>
           }
         />

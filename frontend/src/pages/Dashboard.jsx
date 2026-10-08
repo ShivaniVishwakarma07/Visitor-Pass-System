@@ -44,6 +44,7 @@ const Dashboard = () => {
       <Link to="/visitors">Manage Visitors</Link>
       <Link to="/appointments">Manage Appointments</Link>
       <Link to="/passes">Manage Visitor Passes</Link>
+      <Link to="/check-in-out">Security Check-In / Check-Out</Link>
 
       <button onClick={logout}>Logout</button>
     </div>
