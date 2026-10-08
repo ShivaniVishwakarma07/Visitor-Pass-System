@@ -24,44 +24,61 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <h1>Visitor Pass Management System</h1>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1>Visitor Pass Management System</h1>
+        <p>Create your visitor account</p>
 
-      <h2>Register</h2>
+        <h2>Register</h2>
 
-      {error && <p>{error}</p>}
+        {error && <div className="error-message">{error}</div>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>Name</label>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+            <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+          <div className="form-group">
+            <label>Email</label>
 
-        <button type="submit">Register</button>
-      </form>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-      <p>
-        Already have an account? <Link to="/">Login</Link>
-      </p>
+          <div className="form-group">
+            <label>Password</label>
+
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button type="submit" className="btn btn-primary">
+            Register
+          </button>
+        </form>
+
+        <p>
+          Already have an account? <Link to="/">Login</Link>
+        </p>
+      </div>
     </div>
   );
 };
