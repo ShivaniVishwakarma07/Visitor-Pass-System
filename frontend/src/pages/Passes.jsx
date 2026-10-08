@@ -102,108 +102,136 @@ const Passes = () => {
   };
 
   return (
-    <div>
-      <h1>Visitor Pass Management</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Visitor Pass Management</h1>
+        <p>Generate, verify and download visitor passes</p>
+      </div>
 
-      <h2>Generate Visitor Pass</h2>
+      <div className="card">
+        <h2>Generate Visitor Pass</h2>
+        <p>Select an approved appointment and define the pass validity.</p>
 
-      {appointments.length === 0 ? (
-        <p>No approved appointments available.</p>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <select
-            name="appointment"
-            value={form.appointment}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Approved Appointment</option>
+        {appointments.length === 0 ? (
+          <div className="success-message">
+            No approved appointments available.
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="form-grid">
+            <div className="form-group full">
+              <label>Approved Appointment</label>
 
-            {appointments.map((appointment) => (
-              <option key={appointment._id} value={appointment._id}>
-                {appointment.visitor?.name} -{" "}
-                {new Date(appointment.appointmentDate).toLocaleString()}
-              </option>
-            ))}
-          </select>
+              <select
+                name="appointment"
+                value={form.appointment}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Approved Appointment</option>
 
-          <input
-            type="datetime-local"
-            name="validFrom"
-            value={form.validFrom}
-            onChange={handleChange}
-            required
-          />
+                {appointments.map((appointment) => (
+                  <option key={appointment._id} value={appointment._id}>
+                    {appointment.visitor?.name || "Unknown Visitor"} -{" "}
+                    {new Date(appointment.appointmentDate).toLocaleString()}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          <input
-            type="datetime-local"
-            name="validUntil"
-            value={form.validUntil}
-            onChange={handleChange}
-            required
-          />
+            <div className="form-group">
+              <label>Valid From</label>
 
-          <button type="submit">Generate Pass</button>
-        </form>
-      )}
+              <input
+                type="datetime-local"
+                name="validFrom"
+                value={form.validFrom}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-      <hr />
+            <div className="form-group">
+              <label>Valid Until</label>
 
-      <h2>Issued Passes</h2>
+              <input
+                type="datetime-local"
+                name="validUntil"
+                value={form.validUntil}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-      {loading ? (
-        <p>Loading passes...</p>
-      ) : passes.length === 0 ? (
-        <p>No passes issued yet.</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Pass Number</th>
-              <th>Visitor</th>
-              <th>Valid From</th>
-              <th>Valid Until</th>
-              <th>Status</th>
-              <th>QR Code</th>
-              <th>PDF</th>
-            </tr>
-          </thead>
+            <div className="form-group full">
+              <button type="submit" className="btn btn-primary">
+                Generate Visitor Pass
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
 
-          <tbody>
-            {passes.map((pass) => (
-              <tr key={pass._id}>
-                <td>{pass.passNumber}</td>
+      <div className="card">
+        <h2>Issued Passes</h2>
 
-                <td>{pass.visitor?.name || "Unknown"}</td>
+        {loading ? (
+          <p>Loading passes...</p>
+        ) : passes.length === 0 ? (
+          <p>No passes issued yet.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pass Number</th>
+                  <th>Visitor</th>
+                  <th>Valid From</th>
+                  <th>Valid Until</th>
+                  <th>Status</th>
+                  <th>QR Code</th>
+                  <th>PDF</th>
+                </tr>
+              </thead>
 
-                <td>{new Date(pass.validFrom).toLocaleString()}</td>
+              <tbody>
+                {passes.map((pass) => (
+                  <tr key={pass._id}>
+                    <td>{pass.passNumber}</td>
 
-                <td>{new Date(pass.validUntil).toLocaleString()}</td>
+                    <td>{pass.visitor?.name || "Unknown"}</td>
 
-                <td>{pass.status}</td>
+                    <td>{new Date(pass.validFrom).toLocaleString()}</td>
 
-                <td>
-                  {pass.qrCode && (
-                    <img
-                      src={pass.qrCode}
-                      alt="Visitor Pass QR Code"
-                      width="100"
-                    />
-                  )}
-                </td>
+                    <td>{new Date(pass.validUntil).toLocaleString()}</td>
 
-                <td>
-                  <button
-                    onClick={() => downloadPDF(pass._id, pass.passNumber)}
-                  >
-                    Download PDF
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                    <td>{pass.status}</td>
+
+                    <td>
+                      {pass.qrCode && (
+                        <img
+                          src={pass.qrCode}
+                          alt="Visitor Pass QR Code"
+                          width="100"
+                          height="100"
+                        />
+                      )}
+                    </td>
+
+                    <td>
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => downloadPDF(pass._id, pass.passNumber)}
+                      >
+                        Download PDF
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
