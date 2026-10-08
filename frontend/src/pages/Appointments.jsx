@@ -30,6 +30,7 @@ const Appointments = () => {
   const fetchAppointments = async () => {
     try {
       const response = await api.get("/appointments");
+
       setAppointments(
         Array.isArray(response.data)
           ? response.data
@@ -88,116 +89,145 @@ const Appointments = () => {
   };
 
   return (
-    <div>
-      <h1>Appointment Management</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Appointment Management</h1>
+        <p>Create and manage visitor appointments</p>
+      </div>
 
-      <h2>Create Appointment</h2>
+      <div className="card">
+        <h2>Create Appointment</h2>
 
-      <form onSubmit={handleSubmit}>
-        <select
-          name="visitor"
-          value={form.visitor}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Select Visitor</option>
+        <form onSubmit={handleSubmit} className="form-grid">
+          <div className="form-group">
+            <label>Visitor</label>
+            <select
+              name="visitor"
+              value={form.visitor}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Visitor</option>
 
-          {visitors.map((visitor) => (
-            <option key={visitor._id} value={visitor._id}>
-              {visitor.name} - {visitor.email}
-            </option>
-          ))}
-        </select>
+              {visitors.map((visitor) => (
+                <option key={visitor._id} value={visitor._id}>
+                  {visitor.name} - {visitor.email}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <input
-          type="datetime-local"
-          name="appointmentDate"
-          value={form.appointmentDate}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label>Appointment Date</label>
+            <input
+              type="datetime-local"
+              name="appointmentDate"
+              value={form.appointmentDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <input
-          type="text"
-          name="purpose"
-          placeholder="Purpose of Visit"
-          value={form.purpose}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group full">
+            <label>Purpose</label>
+            <input
+              type="text"
+              name="purpose"
+              placeholder="Enter appointment purpose"
+              value={form.purpose}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <textarea
-          name="notes"
-          placeholder="Additional Notes"
-          value={form.notes}
-          onChange={handleChange}
-        />
+          <div className="form-group full">
+            <label>Notes</label>
+            <textarea
+              name="notes"
+              placeholder="Additional notes"
+              value={form.notes}
+              onChange={handleChange}
+            />
+          </div>
 
-        <button type="submit">Create Appointment</button>
-      </form>
+          <div className="form-group full">
+            <button type="submit" className="btn btn-primary">
+              Create Appointment
+            </button>
+          </div>
+        </form>
+      </div>
 
-      <hr />
+      <div className="card">
+        <h2>Appointments</h2>
 
-      <h2>Appointments</h2>
+        {loading ? (
+          <p>Loading appointments...</p>
+        ) : appointments.length === 0 ? (
+          <p>No appointments found.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Visitor</th>
+                  <th>Host</th>
+                  <th>Date</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
 
-      {loading ? (
-        <p>Loading appointments...</p>
-      ) : appointments.length === 0 ? (
-        <p>No appointments found.</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Visitor</th>
-              <th>Host</th>
-              <th>Date</th>
-              <th>Purpose</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+              <tbody>
+                {appointments.map((appointment) => (
+                  <tr key={appointment._id}>
+                    <td>{appointment.visitor?.name || "-"}</td>
 
-          <tbody>
-            {appointments.map((appointment) => (
-              <tr key={appointment._id}>
-                <td>{appointment.visitor?.name || "Unknown"}</td>
+                    <td>{appointment.host?.name || "-"}</td>
 
-                <td>{appointment.host?.name || "Unknown"}</td>
+                    <td>
+                      {new Date(appointment.appointmentDate).toLocaleString()}
+                    </td>
 
-                <td>
-                  {new Date(appointment.appointmentDate).toLocaleString()}
-                </td>
+                    <td>{appointment.purpose}</td>
 
-                <td>{appointment.purpose}</td>
+                    <td>{appointment.status}</td>
 
-                <td>{appointment.status}</td>
+                    <td>
+                      {appointment.status === "pending" && (
+                        <>
+                          <button
+                            className="btn btn-success"
+                            onClick={() =>
+                              updateStatus(appointment._id, "approved")
+                            }
+                          >
+                            Approve
+                          </button>
 
-                <td>
-                  {appointment.status === "pending" && (
-                    <>
-                      <button
-                        onClick={() =>
-                          updateStatus(appointment._id, "approved")
-                        }
-                      >
-                        Approve
-                      </button>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                              updateStatus(appointment._id, "rejected")
+                            }
+                          >
+                            Reject
+                          </button>
+                        </>
+                      )}
 
-                      <button
-                        onClick={() =>
-                          updateStatus(appointment._id, "rejected")
-                        }
-                      >
-                        Reject
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                      {appointment.status !== "pending" && (
+                        <span>No action</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

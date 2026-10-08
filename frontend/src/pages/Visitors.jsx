@@ -83,128 +83,211 @@ const Visitors = () => {
       alert(error.response?.data?.message || "Failed to delete visitor");
     }
   };
-
   return (
-    <div>
-      <h1>Visitor Management</h1>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Visitor Management</h1>
+        <p>Register and manage visitors</p>
+      </div>
 
-      <h2>Register Visitor</h2>
+      <div className="card">
+        <h2>Register Visitor</h2>
 
-      <form onSubmit={handleSubmit}>
-        <input
-          name="name"
-          placeholder="Full Name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
+        {error && <div className="error-message">{error}</div>}
 
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} className="form-grid">
+          <div className="form-group">
+            <label>Name</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <input
-          name="phone"
-          placeholder="Phone"
-          value={form.phone}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              value={formData.email}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <input
-          name="company"
-          placeholder="Company"
-          value={form.company}
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label>Phone</label>
+            <input
+              type="text"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <input
-          name="purpose"
-          placeholder="Purpose of Visit"
-          value={form.purpose}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label>Company</label>
+            <input
+              type="text"
+              value={formData.company}
+              onChange={(e) =>
+                setFormData({ ...formData, company: e.target.value })
+              }
+            />
+          </div>
 
-        <select name="idType" value={form.idType} onChange={handleChange}>
-          <option value="Aadhaar">Aadhaar</option>
-          <option value="Passport">Passport</option>
-          <option value="Driving License">Driving License</option>
-          <option value="Voter ID">Voter ID</option>
-          <option value="Other">Other</option>
-        </select>
+          <div className="form-group">
+            <label>Purpose</label>
+            <input
+              type="text"
+              value={formData.purpose}
+              onChange={(e) =>
+                setFormData({ ...formData, purpose: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <input
-          name="idNumber"
-          placeholder="ID Number"
-          value={form.idNumber}
-          onChange={handleChange}
-          required
-        />
+          <div className="form-group">
+            <label>ID Type</label>
+            <select
+              value={formData.idType}
+              onChange={(e) =>
+                setFormData({ ...formData, idType: e.target.value })
+              }
+              required
+            >
+              <option value="">Select ID Type</option>
+              <option value="Aadhaar">Aadhaar</option>
+              <option value="Passport">Passport</option>
+              <option value="Driving License">Driving License</option>
+              <option value="Voter ID">Voter ID</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
 
-        <textarea
-          name="address"
-          placeholder="Address"
-          value={form.address}
-          onChange={handleChange}
-        />
+          <div className="form-group">
+            <label>ID Number</label>
+            <input
+              type="text"
+              value={formData.idNumber}
+              onChange={(e) =>
+                setFormData({ ...formData, idNumber: e.target.value })
+              }
+              required
+            />
+          </div>
 
-        <button type="submit">Register Visitor</button>
-      </form>
+          <div className="form-group">
+            <label>Address</label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) =>
+                setFormData({ ...formData, address: e.target.value })
+              }
+            />
+          </div>
 
-      <hr />
+          <div className="form-group">
+            <label>Emergency Contact Name</label>
+            <input
+              type="text"
+              value={formData.emergencyContact.name}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  emergencyContact: {
+                    ...formData.emergencyContact,
+                    name: e.target.value,
+                  },
+                })
+              }
+            />
+          </div>
 
-      <h2>Visitors</h2>
+          <div className="form-group">
+            <label>Emergency Contact Phone</label>
+            <input
+              type="text"
+              value={formData.emergencyContact.phone}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  emergencyContact: {
+                    ...formData.emergencyContact,
+                    phone: e.target.value,
+                  },
+                })
+              }
+            />
+          </div>
 
-      <input
-        type="text"
-        placeholder="Search by name, email, phone or company"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+          <div className="form-group full">
+            <button type="submit" className="btn btn-primary">
+              Register Visitor
+            </button>
+          </div>
+        </form>
+      </div>
 
-      {loading ? (
-        <p>Loading visitors...</p>
-      ) : visitors.length === 0 ? (
-        <p>No visitors found.</p>
-      ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
-              <th>Company</th>
-              <th>Purpose</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
+      <div className="card">
+        <h2>Visitor List</h2>
 
-          <tbody>
-            {visitors.map((visitor) => (
-              <tr key={visitor._id}>
-                <td>{visitor.name}</td>
-                <td>{visitor.email}</td>
-                <td>{visitor.phone}</td>
-                <td>{visitor.company || "-"}</td>
-                <td>{visitor.purpose}</td>
-                <td>{visitor.status}</td>
-                <td>
-                  <button onClick={() => handleDelete(visitor._id)}>
-                    Delete
-                  </button>
-                </td>
+        <div className="form-group" style={{ marginBottom: "20px" }}>
+          <label>Search Visitors</label>
+          <input
+            type="text"
+            placeholder="Search by name, email or phone"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Company</th>
+                <th>Purpose</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+
+            <tbody>
+              {visitors.map((visitor) => (
+                <tr key={visitor._id}>
+                  <td>{visitor.name}</td>
+                  <td>{visitor.email}</td>
+                  <td>{visitor.phone}</td>
+                  <td>{visitor.company || "-"}</td>
+                  <td>{visitor.purpose}</td>
+                  <td>{visitor.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(visitor._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
