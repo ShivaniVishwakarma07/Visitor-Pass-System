@@ -1,37 +1,43 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
+const initialForm = {
+  name: "",
+  email: "",
+  phone: "",
+  company: "",
+  purpose: "",
+  idType: "Aadhaar",
+  idNumber: "",
+  address: "",
+  photo: "",
+  emergencyContact: {
+    name: "",
+    phone: "",
+  },
+};
+
 const Visitors = () => {
   const [visitors, setVisitors] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    purpose: "",
-    idType: "Aadhaar",
-    idNumber: "",
-    address: "",
-  });
+  const [form, setForm] = useState(initialForm);
+  const [error, setError] = useState("");
 
   const fetchVisitors = async () => {
     try {
       const response = await api.get("/visitors", {
-        params: {
-          search,
-        },
+        params: { search },
       });
 
-      const visitorData = Array.isArray(response.data)
+      const data = Array.isArray(response.data)
         ? response.data
         : response.data.visitors || [];
 
-      setVisitors(visitorData);
+      setVisitors(data);
     } catch (error) {
       console.error(error);
+      setError("Failed to load visitors.");
     } finally {
       setLoading(false);
     }
@@ -42,32 +48,71 @@ const Visitors = () => {
   }, [search]);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "emergencyName" || name === "emergencyPhone") {
+      setForm((previous) => ({
+        ...previous,
+        emergencyContact: {
+          ...previous.emergencyContact,
+          [name === "emergencyName" ? "name" : "phone"]: value,
+        },
+      }));
+      return;
+    }
+
+    setForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file.");
+      e.target.value = "";
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError("Photo size must be 2 MB or less.");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setForm((previous) => ({
+        ...previous,
+        photo: reader.result,
+      }));
+      setError("");
+    };
+
+    reader.onerror = () => {
+      setError("Failed to read the selected photo.");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       await api.post("/visitors", form);
-
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        company: "",
-        purpose: "",
-        idType: "Aadhaar",
-        idNumber: "",
-        address: "",
-      });
-
-      fetchVisitors();
+      setForm({ ...initialForm });
+      setLoading(true);
+      await fetchVisitors();
+      alert("Visitor registered successfully.");
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to add visitor");
+      setError(error.response?.data?.message || "Failed to add visitor.");
     }
   };
 
@@ -78,11 +123,12 @@ const Visitors = () => {
 
     try {
       await api.delete(`/visitors/${id}`);
-      fetchVisitors();
+      await fetchVisitors();
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to delete visitor");
+      setError(error.response?.data?.message || "Failed to delete visitor.");
     }
   };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -99,11 +145,9 @@ const Visitors = () => {
           <div className="form-group">
             <label>Name</label>
             <input
-              type="text"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              name="name"
+              value={form.name}
+              onChange={handleChange}
               required
             />
           </div>
@@ -111,11 +155,10 @@ const Visitors = () => {
           <div className="form-group">
             <label>Email</label>
             <input
+              name="email"
               type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
+              value={form.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -123,11 +166,9 @@ const Visitors = () => {
           <div className="form-group">
             <label>Phone</label>
             <input
-              type="text"
-              value={formData.phone}
-              onChange={(e) =>
-                setFormData({ ...formData, phone: e.target.value })
-              }
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
               required
             />
           </div>
@@ -135,22 +176,18 @@ const Visitors = () => {
           <div className="form-group">
             <label>Company</label>
             <input
-              type="text"
-              value={formData.company}
-              onChange={(e) =>
-                setFormData({ ...formData, company: e.target.value })
-              }
+              name="company"
+              value={form.company}
+              onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label>Purpose</label>
             <input
-              type="text"
-              value={formData.purpose}
-              onChange={(e) =>
-                setFormData({ ...formData, purpose: e.target.value })
-              }
+              name="purpose"
+              value={form.purpose}
+              onChange={handleChange}
               required
             />
           </div>
@@ -158,13 +195,11 @@ const Visitors = () => {
           <div className="form-group">
             <label>ID Type</label>
             <select
-              value={formData.idType}
-              onChange={(e) =>
-                setFormData({ ...formData, idType: e.target.value })
-              }
+              name="idType"
+              value={form.idType}
+              onChange={handleChange}
               required
             >
-              <option value="">Select ID Type</option>
               <option value="Aadhaar">Aadhaar</option>
               <option value="Passport">Passport</option>
               <option value="Driving License">Driving License</option>
@@ -176,11 +211,9 @@ const Visitors = () => {
           <div className="form-group">
             <label>ID Number</label>
             <input
-              type="text"
-              value={formData.idNumber}
-              onChange={(e) =>
-                setFormData({ ...formData, idNumber: e.target.value })
-              }
+              name="idNumber"
+              value={form.idNumber}
+              onChange={handleChange}
               required
             />
           </div>
@@ -188,46 +221,47 @@ const Visitors = () => {
           <div className="form-group">
             <label>Address</label>
             <input
-              type="text"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
+              name="address"
+              value={form.address}
+              onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label>Emergency Contact Name</label>
             <input
-              type="text"
-              value={formData.emergencyContact.name}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  emergencyContact: {
-                    ...formData.emergencyContact,
-                    name: e.target.value,
-                  },
-                })
-              }
+              name="emergencyName"
+              value={form.emergencyContact.name}
+              onChange={handleChange}
             />
           </div>
 
           <div className="form-group">
             <label>Emergency Contact Phone</label>
             <input
-              type="text"
-              value={formData.emergencyContact.phone}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  emergencyContact: {
-                    ...formData.emergencyContact,
-                    phone: e.target.value,
-                  },
-                })
-              }
+              name="emergencyPhone"
+              value={form.emergencyContact.phone}
+              onChange={handleChange}
             />
+          </div>
+
+          <div className="form-group full">
+            <label>Visitor Photo (maximum 2 MB)</label>
+            <input type="file" accept="image/*" onChange={handlePhotoChange} />
+
+            {form.photo && (
+              <img
+                src={form.photo}
+                alt="Visitor preview"
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  marginTop: "10px",
+                }}
+              />
+            )}
           </div>
 
           <div className="form-group full">
@@ -251,42 +285,65 @@ const Visitors = () => {
           />
         </div>
 
-        <div className="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Company</th>
-                <th>Purpose</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {visitors.map((visitor) => (
-                <tr key={visitor._id}>
-                  <td>{visitor.name}</td>
-                  <td>{visitor.email}</td>
-                  <td>{visitor.phone}</td>
-                  <td>{visitor.company || "-"}</td>
-                  <td>{visitor.purpose}</td>
-                  <td>{visitor.status}</td>
-                  <td>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDelete(visitor._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+        {loading ? (
+          <p>Loading visitors...</p>
+        ) : visitors.length === 0 ? (
+          <p>No visitors found.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Photo</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Company</th>
+                  <th>Purpose</th>
+                  <th>Status</th>
+                  <th>Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {visitors.map((visitor) => (
+                  <tr key={visitor._id}>
+                    <td>
+                      {visitor.photo ? (
+                        <img
+                          src={visitor.photo}
+                          alt={visitor.name}
+                          style={{
+                            width: "55px",
+                            height: "55px",
+                            objectFit: "cover",
+                            borderRadius: "6px",
+                          }}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </td>
+                    <td>{visitor.name}</td>
+                    <td>{visitor.email}</td>
+                    <td>{visitor.phone}</td>
+                    <td>{visitor.company || "-"}</td>
+                    <td>{visitor.purpose}</td>
+                    <td>{visitor.status}</td>
+                    <td>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(visitor._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
