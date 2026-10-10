@@ -24,6 +24,15 @@ const createPass = async (req, res) => {
       });
     }
 
+    if (
+      req.user.role === "employee" &&
+      appointmentData.host._id.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({
+        message: "You can only issue passes for your own appointments",
+      });
+    }
+
     if (appointmentData.status !== "approved") {
       return res.status(400).json({
         message: "Pass can only be issued for an approved appointment",
@@ -75,7 +84,21 @@ const createPass = async (req, res) => {
 
 const getPasses = async (req, res) => {
   try {
-    const passes = await Pass.find()
+    let filter = {};
+
+    if (req.user.role === "employee") {
+      const appointments = await Appointment.find({
+        host: req.user._id,
+      }).select("_id");
+
+      const appointmentIds = appointments.map((item) => item._id);
+
+      filter = {
+        appointment: { $in: appointmentIds },
+      };
+    }
+
+    const passes = await Pass.find(filter)
       .populate("visitor")
       .populate("appointment")
       .sort({ createdAt: -1 });
@@ -102,6 +125,19 @@ const getPassById = async (req, res) => {
       return res.status(404).json({
         message: "Pass not found",
       });
+    }
+
+    if (req.user.role === "employee") {
+      const appointment = await Appointment.findById(pass.appointment);
+
+      if (
+        !appointment ||
+        appointment.host.toString() !== req.user._id.toString()
+      ) {
+        return res.status(403).json({
+          message: "You cannot access this pass",
+        });
+      }
     }
 
     res.json({
