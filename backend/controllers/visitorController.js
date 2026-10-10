@@ -50,10 +50,15 @@ const createVisitor = async (req, res) => {
 const getVisitors = async (req, res) => {
   try {
     const { search, status } = req.query;
-
     const filter = {};
 
     if (status) {
+      if (!["active", "blocked"].includes(status)) {
+        return res.status(400).json({
+          message: "Invalid visitor status",
+        });
+      }
+
       filter.status = status;
     }
 
@@ -95,9 +100,7 @@ const getVisitorById = async (req, res) => {
       });
     }
 
-    res.json({
-      visitor,
-    });
+    res.json({ visitor });
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch visitor",
@@ -129,6 +132,12 @@ const updateVisitor = async (req, res) => {
       emergencyContact,
       status,
     } = req.body;
+
+    if (status !== undefined && !["active", "blocked"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid visitor status",
+      });
+    }
 
     visitor.name = name ?? visitor.name;
     visitor.email = email ?? visitor.email;
