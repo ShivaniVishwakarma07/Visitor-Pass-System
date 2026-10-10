@@ -129,6 +129,48 @@ const Visitors = () => {
     }
   };
 
+  const exportVisitors = () => {
+    const headers = [
+      "Name",
+      "Email",
+      "Phone",
+      "Company",
+      "Purpose",
+      "ID Type",
+      "Status",
+    ];
+
+    const rows = visitors.map((visitor) => [
+      visitor.name,
+      visitor.email,
+      visitor.phone,
+      visitor.company || "",
+      visitor.purpose,
+      visitor.idType,
+      visitor.status,
+    ]);
+
+    const escapeCSV = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const csvContent = [
+      headers.map(escapeCSV).join(","),
+      ...rows.map((row) => row.map(escapeCSV).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "visitor-report.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -274,7 +316,14 @@ const Visitors = () => {
 
       <div className="card">
         <h2>Visitor List</h2>
-
+        <button
+          className="btn btn-primary"
+          onClick={exportVisitors}
+          style={{ marginBottom: "20px" }}
+        >
+          Export Visitors to CSV
+        </button>
+        ;
         <div className="form-group" style={{ marginBottom: "20px" }}>
           <label>Search Visitors</label>
           <input
@@ -284,7 +333,6 @@ const Visitors = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-
         {loading ? (
           <p>Loading visitors...</p>
         ) : visitors.length === 0 ? (
