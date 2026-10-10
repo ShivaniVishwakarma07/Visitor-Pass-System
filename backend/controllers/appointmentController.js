@@ -46,7 +46,13 @@ const createAppointment = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find()
+    const filter = {};
+
+    if (req.user.role === "employee") {
+      filter.host = req.user._id;
+    }
+
+    const appointments = await Appointment.find(filter)
       .populate("visitor")
       .populate("host", "name email role")
       .sort({ appointmentDate: 1 });
