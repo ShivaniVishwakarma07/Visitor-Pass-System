@@ -88,6 +88,50 @@ const Appointments = () => {
     }
   };
 
+  const exportAppointments = () => {
+    const headers = [
+      "Visitor",
+      "Visitor Email",
+      "Host",
+      "Appointment Date",
+      "Purpose",
+      "Status",
+      "Notes",
+    ];
+
+    const rows = appointments.map((appointment) => [
+      appointment.visitor?.name || "",
+      appointment.visitor?.email || "",
+      appointment.host?.name || "",
+      appointment.appointmentDate
+        ? new Date(appointment.appointmentDate).toLocaleString()
+        : "",
+      appointment.purpose || "",
+      appointment.status || "",
+      appointment.notes || "",
+    ]);
+
+    const escapeCSV = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const csvContent = [
+      headers.map(escapeCSV).join(","),
+      ...rows.map((row) => row.map(escapeCSV).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "appointment-report.csv";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
@@ -160,6 +204,14 @@ const Appointments = () => {
 
       <div className="card">
         <h2>Appointments</h2>
+
+        <button
+          className="btn btn-primary"
+          onClick={exportAppointments}
+          style={{ marginTop: "15px", marginBottom: "20px" }}
+        >
+          Export Appointments to CSV
+        </button>
 
         {loading ? (
           <p>Loading appointments...</p>
