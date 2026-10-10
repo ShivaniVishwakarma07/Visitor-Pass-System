@@ -68,7 +68,7 @@ const Passes = () => {
         validUntil: "",
       });
 
-      fetchPasses();
+      await fetchPasses();
 
       alert("Visitor pass created successfully");
     } catch (error) {
@@ -99,6 +99,53 @@ const Passes = () => {
     } catch (error) {
       alert("Failed to download pass PDF");
     }
+  };
+
+  const exportPasses = () => {
+    if (passes.length === 0) {
+      alert("No passes available to export");
+      return;
+    }
+
+    const headers = [
+      "Pass Number",
+      "Visitor",
+      "Visitor Email",
+      "Valid From",
+      "Valid Until",
+      "Status",
+    ];
+
+    const rows = passes.map((pass) => [
+      pass.passNumber || "",
+      pass.visitor?.name || "",
+      pass.visitor?.email || "",
+      pass.validFrom ? new Date(pass.validFrom).toLocaleString() : "",
+      pass.validUntil ? new Date(pass.validUntil).toLocaleString() : "",
+      pass.status || "",
+    ]);
+
+    const escapeCSV = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+
+    const csvContent = [
+      headers.map(escapeCSV).join(","),
+      ...rows.map((row) => row.map(escapeCSV).join(",")),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "visitor-pass-report.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -173,6 +220,15 @@ const Passes = () => {
 
       <div className="card">
         <h2>Issued Passes</h2>
+
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={exportPasses}
+          style={{ marginTop: "15px", marginBottom: "20px" }}
+        >
+          Export Passes to CSV
+        </button>
 
         {loading ? (
           <p>Loading passes...</p>
