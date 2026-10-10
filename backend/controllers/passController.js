@@ -163,6 +163,19 @@ const downloadPassPDF = async (req, res) => {
       });
     }
 
+    if (req.user.role === "employee") {
+      const appointment = await Appointment.findById(pass.appointment);
+
+      if (
+        !appointment ||
+        appointment.host.toString() !== req.user._id.toString()
+      ) {
+        return res.status(403).json({
+          message: "You cannot download this pass",
+        });
+      }
+    }
+
     generatePassPDF(pass, res);
   } catch (error) {
     res.status(500).json({
