@@ -9,13 +9,15 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendEmail = async ({ to, subject, text, html }) => {
-  await transporter.sendMail({
+  const mailOptions = {
     from: `"Visitor Pass System" <${process.env.EMAIL_USER}>`,
     to,
     subject,
     text,
     html,
-  });
+  };
+
+  return transporter.sendMail(mailOptions);
 };
 
 module.exports = sendEmail;
