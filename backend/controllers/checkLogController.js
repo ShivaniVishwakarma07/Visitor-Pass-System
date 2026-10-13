@@ -87,6 +87,12 @@ const checkOutVisitor = async (req, res) => {
       });
     }
 
+    if (pass.status !== "active") {
+      return res.status(400).json({
+        message: `Pass is ${pass.status}`,
+      });
+    }
+
     const lastCheckIn = await CheckLog.findOne({
       pass: pass._id,
       action: "check-in",
